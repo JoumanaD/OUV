@@ -38,7 +38,8 @@ let rec poly_prod (l1 : polynome) (l2 : polynome) : polynome  =
     | [], _ -> l2
     | _,[] -> l1
     | h1::q1, h2::q2 ->
-        if snd h1 == snd h2 then (fst h1 * fst h2, snd h1)::poly_prod q1 q2
+        if (snd h1 == snd h2) || (snd h2 == 0) then (fst h1 * fst h2, snd h1)::poly_prod q1 q2
+        else if (snd h1 == 0) then (fst h1 * fst h2, snd h2)::poly_prod q1 q2 
         else if snd h1 < snd h2 then h1::poly_prod q1 l2
         else h2 :: poly_prod l1 q2
 ;;
@@ -78,7 +79,7 @@ and arbreM =
         x   1
 *)
 (** Implementation arbre représentant '123 * x + 42 + x^3 *)
-let expab = NodePlus([
+let contruireArbre = NodePlus([
                 NodeMulti([ NodeIntM 123; NodePowerM 1 ]);
                 NodeIntP 42;
                 NodePowerP 3
@@ -86,23 +87,38 @@ let expab = NodePlus([
 
     ;;
 
-let plus (aP: arbreP) (l: polynome) : polynome = 
-    match aP with
-    | NodeIntP n -> insere (n,0) l
-    | NodePowerP n -> insere (1,n) l
-    | NodeMulti
-;;
-let rec arbM2poly (a: arbreM list) (l: polynome) : polynome = 
+
+let rec arbM2poly (a: arbreM list) : polynome = 
     match a with 
-    | NodeMulti [] -> []
-    | NodeMulti(h::t) -> arbP2poly h l
-    | NodeIntM n -> canonique ((n,0)::l)
-    | NodePowerM n -> canonique ((1,n)::l)
-and 
-arbP2poly (a: arbreP list) (l : polynome): polynome =  
-    match a with
-    | [] -> [] 
-    | NodePlus [] :: f -> []
-    | NodePlus(h::t) :: f-> arbM2poly h l
-    | NodeIntP n :: f-> canonique ((n,0)::l)
-    | NodePowerP n :: f-> canonique ((1,n)::l)
+    | [] -> []
+    | NodeIntM x :: t-> poly_prod [(x,0)] (arbM2poly t)
+    | NodePowerM x :: t-> poly_prod [(1, x)] (arbM2poly t)
+    | NodePlus l :: t -> (arbP2poly l) @ (arbM2poly t)
+and arbP2poly  (a: arbreP list) : polynome =
+     match a with 
+    | [] -> []
+    | NodeIntP x :: t -> poly_add [(x,0)] (arbP2poly t)
+    | NodePowerP x :: t -> poly_add [(1, x)] (arbP2poly t)
+    | NodeMulti l :: t -> (arbM2poly l) @ (arbP2poly t)
+;;
+
+let arb2poly (a: arbre) (p : polynome) : polynome = 
+    match a with 
+    | NodeInt x -> (x,0)::p
+    | NodePower x -> (1, x)::p
+    | NodeMulti [] -> [] @ p
+    | NodePlus [] -> [] @ p 
+    | NodeMulti l -> canonique (arbM2poly l) @ p
+    | NodePlus l -> canonique (arbP2poly l) @ p 
+;;
+let x = (arb2poly contruireArbre []);;
+
+let contruireArbre2 = NodePlus([
+                NodeMulti([ NodePlus([NodeIntP 3 ; NodeIntP 3; NodeIntP (-1)]);  NodePowerM 15 ]);
+                NodeIntP 20;
+                NodeMulti([ NodeIntM 20 ; NodePowerM 4])
+                ])
+
+    ;;
+
+arb2poly contruireArbre2 [];;

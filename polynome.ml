@@ -46,7 +46,8 @@ let rec poly_prod (l1 : polynome) (l2 : polynome) : polynome  =
     | [], _ -> l2
     | _,[] -> l1
     | h1::q1, h2::q2 ->
-        if snd h1 == snd h2 then (fst h1 * fst h2, snd h1)::poly_prod q1 q2
+        if (snd h1 == snd h2) || (snd h2 == 0) then (fst h1 * fst h2, snd h1)::poly_prod q1 q2
+        else if (snd h1 == 0) then (fst h1 * fst h2, snd h2)::poly_prod q1 q2 
         else if snd h1 < snd h2 then h1::poly_prod q1 l2
         else h2 :: poly_prod l1 q2
 ;;
@@ -55,3 +56,4 @@ let lprod1 : polynome = [(3,1); (5,2); (3,3)];;
 let lprod2 : polynome = [(1,1); (2,2); (2,3); (10,4)];;
 (** polynome = [(3, 1); (10, 2); (6, 3); (10, 4)] *)
 poly_prod lprod1 lprod2;;
+poly_prod [(123,0)] [(1, 1)] ;;
