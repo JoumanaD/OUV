@@ -15,22 +15,22 @@
 - [X] Q1.7 Fonction **arb2poly** : arbre -> polynome canonique
 ### 1.3 Synthèse d’expressions arborescentes
 - [X] Q1.8 Fonction **extraction_alea**
-- Q1.9 Fonction **gen_permutation**
-- Q1.10 Fonction **ABR**
-- Q1.11 Fonction etiquetage
-- Q1.12 Fonction gen_arb
+- [ ] Q1.9 Fonction **gen_permutation**
+- [ ] Q1.10 Fonction **ABR**
+- [ ] Q1.11 Fonction etiquetage
+- [ ] Q1.12 Fonction gen_arb
 
 ## PARTIE 2
 > Pour les trois questions suivantes, prendre successivement n = 100, . . . , 1000 avec un pas de 100, et représenter les temps de calculs sur les mêmes courbes (soit addition soit produit).
 
-- Q2.13 Générer n ABR de taille 20, puis les transformer avec les fonctions etiquetage et **gen_arb**.
-- Q2.14 On veut calculer le polynôme canonique issu de la somme des n arbres précédents.
+- [ ] Q2.13 Générer n ABR de taille 20, puis les transformer avec les fonctions etiquetage et **gen_arb**.
+- [ ] Q2.14 On veut calculer le polynôme canonique issu de la somme des n arbres précédents.
   - Proposer et analyser plusieurs (au moins 3) stratégies et représenter le temps de calcul nécessaire sur un graphique addition.
-- Q2.15 On veut calculer le polynôme canonique issu du produit des n arbres précédents.
+- [ ] Q2.15 On veut calculer le polynôme canonique issu du produit des n arbres précédents.
   - Proposer et analyser plusieurs (au moins 3) stratégies et représenter le temps de calcul nécessaire sur un graphique produit.
-- Q2.16 Générer 15 ABR de tailles respectives 1, 1, 2, 4, 8, . . . 2^13 puis les transformer avec les fonctions etiquetage et gen_arb.
-- Q2.17 On veut calculer le polynôme canonique issu de la somme des 15 arbres précédents.
+- [ ] Q2.16 Générer 15 ABR de tailles respectives 1, 1, 2, 4, 8, . . . 2^13 puis les transformer avec les fonctions etiquetage et gen_arb.
+- [ ] Q2.17 On veut calculer le polynôme canonique issu de la somme des 15 arbres précédents.
   - Proposer et analyser plusieurs (au moins 3) stratégies et calculer le temps de calcul nécessaire.
-- Q2.18 On veut calculer le polynôme canonique issu du produit des 15 arbres précédents.
+- [ ] Q2.18 On veut calculer le polynôme canonique issu du produit des 15 arbres précédents.
   - Proposer et analyser plusieurs (au moins 3) stratégies et représenter le temps de calcul nécessaire.
-- Q2.19 (Facultatif) Répéter les questions 2.16, 2.17 et 2.18 plusieurs fois afin d’obtenir des temps moyens.
+- [ ] Q2.19 (Facultatif) Répéter les questions 2.16, 2.17 et 2.18 plusieurs fois afin d’obtenir des temps moyens.
