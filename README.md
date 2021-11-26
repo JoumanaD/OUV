@@ -4,17 +4,17 @@
 ## PARTIE 1 
 ###  1.1 Polynôme sous forme linéaire
 > Le monôme c · x^d est donné par le couple (c, d) ∈ Z × N. Un polynôme est une liste de monômes.
-- Q1.1 Structure de données permettant de manipuler des polynômes
-- Q1.2 Fonction **canonique** 
-- Q1.3 Fonction **poly_add**
-- Q1.4 Fonction **poly_prod**
+- [X] Q1.1 Structure de données permettant de manipuler des polynômes
+- [X] Q1.2 Fonction **canonique** 
+- [X] Q1.3 Fonction **poly_add**
+- [X] Q1.4 Fonction **poly_prod**
 ### 1.2 Expression arborescente
 > ![image](https://user-images.githubusercontent.com/76997880/143219579-51aedf47-b944-403a-92f5-a8d41a29a2d8.png)
-- Q1.5 Structure de données permettant de manipuler ces arbres.
-- Q1.6 Expression représentant l’arbre à gauche de la Figure 1.
-- Q1.7 Fonction **arb2poly** : arbre -> polynome canonique
+- [X] Q1.5 Structure de données permettant de manipuler ces arbres.
+- [X] Q1.6 Expression représentant l’arbre à gauche de la Figure 1.
+- [X] Q1.7 Fonction **arb2poly** : arbre -> polynome canonique
 ### 1.3 Synthèse d’expressions arborescentes
-- Q1.8 Fonction **extraction_alea**
+- [X] Q1.8 Fonction **extraction_alea**
 - Q1.9 Fonction **gen_permutation**
 - Q1.10 Fonction **ABR**
 - Q1.11 Fonction etiquetage
