@@ -25,30 +25,43 @@ let extraction_alea (m: int list) (p: int list) : int list * int list =
 
 let x = (extraction_alea [0;1;2;3;4] [5;6;7;8;9]);;
 
-(*
-
-let swap arr i j =
-  let temp = arr.(i) in
-  arr.(i) <- arr.(j);
-  arr.(j) <- temp
-
-let fisher_yates_shuffle arr =
-  let l = Array.length arr in
-  for i = (l-1) downto 1 do
-    let r = Random.int (i+1) in
-    swap arr i r;
-  done;
-*)
-
-
 let rec create_liste n = 
     if n!=0 then (insere n (create_liste (n-1))) else []
 ;;  
 
 create_liste 5;;
 
-let gen_permutation n =  
+let gen_permutation n = 
+    let rec permutation (m: int list) (p: int list) : int list = 
+        match m with 
+        | [] -> p
+        | h::t -> let (a, b) = (extraction_alea m p) in permutation a b
+    in 
+    permutation (create_liste n) [];;
 
-let rec fisher_yates l = 
-    match l with 
-;;  
+gen_permutation 5;;
+
+
+(* Définition du type pour construire un ABR *)
+type abr = 
+  | Feuille
+  | Noeud of int*abr*abr
+;;
+
+let createTree v = Noeud(v,Feuille,Feuille);;
+
+let rec insert l a = 
+  match a with
+    | Feuille -> Noeud(l,Feuille,Feuille)
+    | Noeud(k, fg, fd) -> if l < k  then 
+                        Noeud(k, (insert l fg), fd ) 
+                      else Noeud(k,fg, (insert l fd))
+;;
+
+let rec construireARB l a = 
+  match l with
+    | [] -> a
+    | h::t -> construireARB t (insert h a)
+;;	
+
+construireARB [4;2;3;8;1;9;6;7;5] Feuille;;
