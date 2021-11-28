@@ -1,14 +1,4 @@
-(** fonction déjà contruire dans un des exercices precédents *)
-let rec insere_liste (elem : int) (liste : int list) : int list  = 
-    match liste with
-    |  [] -> elem::[]
-    |  tete::queue ->
-        if  elem <= tete then elem :: liste
-        else tete :: insere_liste elem queue
-;;
-
 (*1.3*)
-
 let rec remove (x: int) (i: int) (l: int list) : int list  * int  =
   match l with
   | [] -> failwith "liste vide"
@@ -25,6 +15,14 @@ let extraction_alea (m: int list) (p: int list) : int list * int list =
 ;;
 
 let x = (extraction_alea [0;1;2;3;4] [5;6;7;8;9]);;
+
+let rec insere_liste (elem : int) (liste : int list) : int list  = 
+    match liste with
+    |  [] -> elem::[]
+    |  tete::queue ->
+        if  elem <= tete then elem :: liste
+        else tete :: insere_liste elem queue
+;;
 
 let rec create_liste n = 
     if n!=0 then (insere_liste n (create_liste (n-1))) else []
@@ -48,8 +46,6 @@ type abr =
   | Feuille
   | Noeud of int *  abr *  abr
 ;;
-
-let createTree v = Noeud(v,Feuille,Feuille);;
 
 let rec insert l a = 
   match a with

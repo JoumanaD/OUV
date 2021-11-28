@@ -7,7 +7,7 @@ let rec insere (elem : monome) (liste : polynome) : polynome  =
     match liste with
     |  [] -> elem::[]
     |  tete::queue ->
-        if snd elem < snd tete then elem :: liste
+        if snd elem > snd tete then elem :: liste
         else if snd elem = snd tete then (fst tete + fst elem, snd elem):: queue
         else tete :: insere elem queue
 ;;
@@ -15,7 +15,8 @@ let rec insere (elem : monome) (liste : polynome) : polynome  =
 let rec canonique (l : polynome) : polynome = 
     match l with 
     | [] -> []
-    | h::t -> if (fst h == 0) then canonique t else 
+    | h::[] -> h::l
+    | h::m::t -> if (fst h == 0) then canonique t else 
         insere h (canonique t)
 ;;
 
@@ -29,15 +30,19 @@ let rec poly_add (l1 : polynome) (l2 : polynome) : polynome  =
     | [], _ -> l2
     | _,[] -> l1
     | h1::q1, h2::q2 ->
-        if snd h1 > snd h2 then canonique (h1 :: poly_add q1 l2)
-        else canonique (h2 :: poly_add l1 q2)
+        if snd h1 > snd h2 then (h1 :: poly_add q1 l2) else 
+        if snd h1 = snd h2 then (fst h1 + fst h2, snd h1):: poly_add q1 q2
+        else (h2 :: poly_add l1 q2)
 ;;
 
 (** des tests pour tester la fonction poly_add *)
-let ltest1 : polynome = [(3,1); (5,2); (3,3)];;
-let ltest2 : polynome = [(1,1); (2,2); (2,3); (10,4)];;
-(** polynome = [(4, 1); (7, 2); (5, 3); (10, 4)] *)
+let ltest1 : polynome = [(3,3); (5,2); (3,1)];;
+let ltest2 : polynome = [(10,4); (2,3); (2,2); (1,1)];;
+(** polynome = [(10, 4); (5, 3); (7, 2); (4, 1)] *)
 poly_add ltest1 ltest2;;
+poly_add [] ltest2;;
+poly_add ltest1 [];;
+
 
 (** val poly_prod : polynome -> polynome -> polynome *)
 let rec poly_prod (l1 : polynome) (l2 : polynome) : polynome  =
@@ -52,20 +57,16 @@ let rec poly_prod (l1 : polynome) (l2 : polynome) : polynome  =
         | h1::q1, h2::q2 -> poly_add (produit h1 l2) (poly_prod q1 l2) 
 ;;
 (** des tests pour tester la fonction poly_prod *)
-let lprod1 : polynome = [(3,1); (5,2); (3,3)];;
-let lprod2 : polynome = [(4,0);(1,1); (2,2); (2,3); (10,4)];;
-(** polynome = [(3, 1); (10, 2); (6, 3); (10, 4)] *)
-poly_prod lprod1 lprod2;;
+poly_prod ltest1 ltest2;;
 
-let lprod3 : polynome = [(1,1); (2,2)];;
-let lprod4 : polynome = [(5,0);(3,1); (-4,2)];;
-poly_prod lprod3 lprod4;;
+let ltest3 : polynome = [(1,1); (2,2)];;
+let ltest4 : polynome = [(5,0);(3,1); (-4,2)];;
+poly_prod ltest3  ltest4;;
 poly_prod [(123,0)] [(1, 1)];;
 poly_prod [] [(2, 10)];;
-poly_prod lprod1 [];;
+poly_prod ltest1 [];;
 poly_prod [(1, 13)] [];;
 poly_prod [] [];;
-
 
 (** 
     E = int | E^ | E+ | E*
@@ -82,13 +83,13 @@ type arbre =
 and arbreP = 
     | NodeIntP of int (* int est positif ou negatif *)
     | NodePowerP of int (**x^int+, int est positif *)
-    | NodeMulti of arbreM list
+    | NodeMultiP of arbreM list
     (* jamais deux * successif parce que le noeud d'addition contient l'arbreM où ne contient pas le noeud addition *)
 and arbreM = 
     | NodeIntM of int (* int est positif ou negatif *)
     | NodePowerM of int (**x^int+, int est positif *)
-    | NodePlus of arbreP list
-    (* jamais deux + successif parce que le noeud de multiplication contient l'arbreP où ne contient pas le noeud multiplicqtion *)
+    | NodePlusM of arbreP list
+    (* jamais deux + successif parce que le noeud de multiplication contient l'arbreP où ne contient pas le noeud multiplication *)
 ;;
 
 
@@ -103,7 +104,7 @@ and arbreM =
 *)
 (** Implementation arbre représentant '123 * x + 42 + x^3 *)
 let contruireArbre = NodePlus([
-                NodeMulti([ NodeIntM 123; NodePowerM 1 ]);
+                NodeMultiP([ NodeIntM 123; NodePowerM 1 ]);
                 NodeIntP 42;
                 NodePowerP 3
                 ])
@@ -116,19 +117,14 @@ let rec arbM2poly (a: arbreM list) : polynome =
     | [] -> []
     | NodeIntM x :: t-> poly_prod [(x,0)] (arbM2poly t)
     | NodePowerM x :: t-> poly_prod [(1, x)] (arbM2poly t)
-    | NodePlus l :: t -> (arbP2poly l) @ (arbM2poly t)
+    | NodePlusM l :: t -> (arbP2poly l) @ (arbM2poly t)
 and arbP2poly  (a: arbreP list) : polynome =
      match a with 
     | [] -> []
     | NodeIntP x :: t -> poly_add [(x,0)] (arbP2poly t)
     | NodePowerP x :: t -> poly_add [(1, x)] (arbP2poly t)
-    | NodeMulti l :: t -> (arbM2poly l) @ (arbP2poly t)
+    | NodeMultiP l :: t -> (arbM2poly l) @ (arbP2poly t)
 ;;
-
-
-
-arbM2poly [ NodeIntM 123; NodePowerM 1 ];;
-arbP2poly [ NodeIntP 123; NodePowerP 1 ];; 
 
 let arb2poly (a: arbre) : polynome = 
     match a with 
@@ -143,26 +139,16 @@ arb2poly contruireArbre ;;
 
 
 let contruireArbre2 = NodePlus([
-                NodeMulti([ NodePlus([NodeIntP 3 ; NodeIntP 3; NodeIntP (-1)]);  NodePowerM 15 ]);
+                NodeMultiP([ NodePlusM([NodeIntP 3 ; NodeIntP 3; NodeIntP (-1)]);  NodePowerM 15 ]);
                 NodeIntP 20;
-                NodeMulti([ NodeIntM 20 ; NodePowerM 4])
+                NodeMultiP([ NodeIntM 20 ; NodePowerM 4])
                 ])
 
     ;;
 
 arb2poly contruireArbre2;;
 
-(** fonction déjà contruire dans un des exercices precédents *)
-let rec insere_liste (elem : int) (liste : int list) : int list  = 
-    match liste with
-    |  [] -> elem::[]
-    |  tete::queue ->
-        if  elem <= tete then elem :: liste
-        else tete :: insere_liste elem queue
-;;
-
 (*1.3*)
-
 let rec remove (x: int) (i: int) (l: int list) : int list  * int  =
   match l with
   | [] -> failwith "liste vide"
@@ -179,6 +165,14 @@ let extraction_alea (m: int list) (p: int list) : int list * int list =
 ;;
 
 let x = (extraction_alea [0;1;2;3;4] [5;6;7;8;9]);;
+
+let rec insere_liste (elem : int) (liste : int list) : int list  = 
+    match liste with
+    |  [] -> elem::[]
+    |  tete::queue ->
+        if  elem <= tete then elem :: liste
+        else tete :: insere_liste elem queue
+;;
 
 let rec create_liste n = 
     if n!=0 then (insere_liste n (create_liste (n-1))) else []
@@ -203,8 +197,6 @@ type abr =
   | Noeud of int *  abr *  abr
 ;;
 
-let createTree v = Noeud(v,Feuille,Feuille);;
-
 let rec insert l a = 
   match a with
     | Feuille -> Noeud(l,Feuille,Feuille)
@@ -219,7 +211,7 @@ let rec construireARB l a =
     | h::t -> construireARB t (insert h a)
 ;;	
 
-construireARB [4;2;3;8;1;9;6;7;5] Feuille;;
+let abr1 = construireARB [4;2;3;8;1;9;6;7;5] Feuille;;
 
 (**
   * = 42 
@@ -241,9 +233,48 @@ let rec etiquetage a =
                                       en bool 0.5&&0.5=0.25 alors Random.bool() && Random.bool() = 0.25 de probabilité*)      
 ;;
 
-etiquetage (construireARB [4;2;3;8;1;9;6;7;5] Feuille);;
-let rec abr2poly (a: abr) : int = 
+let a1 = etiquetage (construireARB [4;2;3;8;1;9;6;7;5] Feuille);;
+let a2 = etiquetage (construireARB [4;2;3;8;1;9;6;7;4] Feuille);;
+
+let rec abr2poly (a: abr) : polynome = 
     match a with 
-    | Noeud(l, Noeud(g, Feuille, Feuille) , Noeud(d, Feuille, Feuille) ) -> match l with 
-                                                                                | 42 -> g
-                                                                                | 94 -> d
+    | Feuille -> []   
+    | Noeud(l, Noeud(g, Feuille, Feuille), Noeud(d, Feuille, Feuille)) ->
+        if l = 42 then [(g,1)] else if l = 94 then [(1,d)] else []
+    | Noeud(l, fg,fd) -> if l = 42 then poly_prod (canonique (abr2poly fg)) (canonique (abr2poly fd)) else 
+                        if l = 43 then poly_add (canonique (abr2poly fg)) (canonique (abr2poly fd)) else []
+;;
+
+abr2poly (a1);;
+canonique (abr2poly (a2));;
+
+
+(** Partie Experimentations *)
+
+let rec long (a: abr) : int = 
+    match a with
+    | Feuille -> 0
+    | Noeud(_, g, d) -> 1 + max (long g) (long d);;
+
+long abr1;;
+
+(**2.13*)
+let ln = [100; 200; 300; 400; 500; 600; 700; 800; 900; 1000];;
+let abr200 = construireARB [1; 2; 3; 4; 5;6;7;8;9;10;11;12;13;14;15;16;17;18;19;20] Feuille;;
+let abr201 = construireARB [4;23;60;17;59;40;39;58;46;2;57;22;61;30;45;56;38;16;62;3;69;70;71;72;55;29;44;63;54;68;37;24;8;13;73;74;75;
+76;64;43;10;28;1;65;36;66;21;50;47;9;77;78;79;80;81;18;67;49;6;82;11;26;41;83;31;51;42;52;19;20;48;53;7;14;35;32;25;21;12;33;15;34;5] Feuille;;
+long abr201;;
+
+let time f =
+  let t = Sys.time () in
+  let res = f () in
+  Printf.printf ("Temps d'éxécution: %f secondes \n")
+                (Sys.time () -. t);
+  res
+;;
+
+let n = 100;;
+let g =  gen_permutation 34;;
+let cons = construireARB g Feuille;;
+time (fun () -> (g));;
+time (fun () -> (cons));;
