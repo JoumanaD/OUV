@@ -12,7 +12,6 @@ let rec insere (elem : monome) (liste : polynome) : polynome  =
         else tete :: insere elem queue
 ;;
 
-
 let rec canonique (l : polynome) : polynome = 
     match l with 
     | [] -> []
@@ -41,19 +40,28 @@ let ltest2 : polynome = [(1,1); (2,2); (2,3); (10,4)];;
 poly_add ltest1 ltest2;;
 
 (** val poly_prod : polynome -> polynome -> polynome *)
-let rec poly_prod (l1 : polynome) (l2 : polynome) : polynome  = 
-    match l1, l2 with
-    | [], _ -> l2
-    | _,[] -> l1
-    | h1::q1, h2::q2 ->
-        if (snd h1 == snd h2) || (snd h2 == 0) then (fst h1 * fst h2, snd h1)::poly_prod q1 q2
-        else if (snd h1 == 0) then (fst h1 * fst h2, snd h2)::poly_prod q1 q2 
-        else if snd h1 < snd h2 then h1::poly_prod q1 l2
-        else h2 :: poly_prod l1 q2
+let rec poly_prod (l1 : polynome) (l2 : polynome) : polynome  =
+    let rec produit (e : monome) (lp : polynome) : polynome = 
+        match lp with
+        | [] -> []
+        | h1::q1 -> (fst h1 * fst e, snd h1 + snd e)::produit e q1
+    in match l1, l2 with
+        | l1, [] -> l1 
+        | h1::[], l2 -> produit h1 l2
+        | [], l2 -> l2
+        | h1::q1, h2::q2 -> poly_add (produit h1 l2) (poly_prod q1 l2) 
 ;;
 (** des tests pour tester la fonction poly_prod *)
 let lprod1 : polynome = [(3,1); (5,2); (3,3)];;
-let lprod2 : polynome = [(1,1); (2,2); (2,3); (10,4)];;
+let lprod2 : polynome = [(4,0);(1,1); (2,2); (2,3); (10,4)];;
 (** polynome = [(3, 1); (10, 2); (6, 3); (10, 4)] *)
 poly_prod lprod1 lprod2;;
-poly_prod [(123,0)] [(1, 1)] ;;
+
+let lprod3 : polynome = [(1,1); (2,2)];;
+let lprod4 : polynome = [(5,0);(3,1); (-4,2)];;
+poly_prod lprod3 lprod4;;
+poly_prod [(123,0)] [(1, 1)];;
+poly_prod [] [(2, 10)];;
+poly_prod lprod1 [];;
+poly_prod [(1, 13)] [];;
+poly_prod [] [];;

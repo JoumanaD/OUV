@@ -33,15 +33,16 @@ let rec poly_add (l1 : polynome) (l2 : polynome) : polynome  =
 
 
 (** val poly_prod : polynome -> polynome -> polynome *)
-let rec poly_prod (l1 : polynome) (l2 : polynome) : polynome  = 
-    match l1, l2 with
-    | [], _ -> l2
-    | _,[] -> l1
-    | h1::q1, h2::q2 ->
-        if (snd h1 == snd h2) || (snd h2 == 0) then (fst h1 * fst h2, snd h1)::poly_prod q1 q2
-        else if (snd h1 == 0) then (fst h1 * fst h2, snd h2)::poly_prod q1 q2 
-        else if snd h1 < snd h2 then h1::poly_prod q1 l2
-        else h2 :: poly_prod l1 q2
+let rec poly_prod (l1 : polynome) (l2 : polynome) : polynome  =
+    let rec produit (e : monome) (lp : polynome) : polynome = 
+        match lp with
+        | [] -> []
+        | h1::q1 -> (fst h1 * fst e, snd h1 + snd e)::produit e q1
+    in match l1, l2 with
+        | l1, [] -> l1 
+        | h1::[], l2 -> produit h1 l2
+        | [], l2 -> l2
+        | h1::q1, h2::q2 -> poly_add (produit h1 l2) (poly_prod q1 l2) 
 ;;
 
 (** 
@@ -50,7 +51,7 @@ let rec poly_prod (l1 : polynome) (l2 : polynome) : polynome  =
     E+ = (E\E+) + (E\E+) + ...
     E* = (E\E*') * (E\E*') * ...
 *)
-exception Negatif of int;;
+
 type arbre = 
     | NodeInt of int
     | NodePower of int 
@@ -102,16 +103,22 @@ and arbP2poly  (a: arbreP list) : polynome =
     | NodeMulti l :: t -> (arbM2poly l) @ (arbP2poly t)
 ;;
 
-let arb2poly (a: arbre) (p : polynome) : polynome = 
+
+
+arbM2poly [ NodeIntM 123; NodePowerM 1 ];;
+arbP2poly [ NodeIntP 123; NodePowerP 1 ];; 
+
+let arb2poly (a: arbre) : polynome = 
     match a with 
-    | NodeInt x -> (x,0)::p
-    | NodePower x -> (1, x)::p
-    | NodeMulti [] -> [] @ p
-    | NodePlus [] -> [] @ p 
-    | NodeMulti l -> canonique (arbM2poly l) @ p
-    | NodePlus l -> canonique (arbP2poly l) @ p 
+    | NodeInt x -> [(x,0)]
+    | NodePower x -> [(1, x)]
+    | NodeMulti [] -> [] 
+    | NodePlus [] -> [] 
+    | NodeMulti l -> canonique (arbM2poly l) 
+    | NodePlus l -> canonique (arbP2poly l) 
 ;;
-let x = (arb2poly contruireArbre []);;
+arb2poly contruireArbre ;;
+
 
 let contruireArbre2 = NodePlus([
                 NodeMulti([ NodePlus([NodeIntP 3 ; NodeIntP 3; NodeIntP (-1)]);  NodePowerM 15 ]);
@@ -121,4 +128,4 @@ let contruireArbre2 = NodePlus([
 
     ;;
 
-arb2poly contruireArbre2 [];;
+arb2poly contruireArbre2;;
