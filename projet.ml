@@ -274,7 +274,7 @@ let time f =
 ;;
 
 let n = 100;;
-let g =  gen_permutation 34;;
+let g =  gen_permutation 40;;
 let cons = construireARB g Feuille;;
 time (fun () -> (g));;
 time (fun () -> (cons));;

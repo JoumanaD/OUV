@@ -15,9 +15,9 @@
 - [X] Q1.7 Fonction **arb2poly** : arbre -> polynome canonique
 ### 1.3 Synthèse d’expressions arborescentes
 - [X] Q1.8 Fonction **extraction_alea**
-- [ ] Q1.9 Fonction **gen_permutation**
-- [ ] Q1.10 Fonction **ABR**
-- [ ] Q1.11 Fonction etiquetage
+- [X] Q1.9 Fonction **gen_permutation**
+- [X] Q1.10 Fonction **ABR**
+- [X] Q1.11 Fonction etiquetage
 - [ ] Q1.12 Fonction gen_arb
 
 ## PARTIE 2
