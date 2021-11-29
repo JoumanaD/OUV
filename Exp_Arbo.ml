@@ -15,8 +15,7 @@ let rec insere (elem : monome) (liste : polynome) : polynome  =
 let rec canonique (l : polynome) : polynome = 
     match l with 
     | [] -> []
-    | h::[] -> h::l
-    | h::m::t -> if (fst h == 0) then canonique t else 
+    | h::t -> if (fst h == 0) then canonique t else 
         insere h (canonique t)
 ;;
 

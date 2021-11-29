@@ -12,17 +12,21 @@ let rec insere (elem : monome) (liste : polynome) : polynome  =
         else tete :: insere elem queue
 ;;
 
+
 let rec canonique (l : polynome) : polynome = 
     match l with 
     | [] -> []
-    | h::[] -> h::l
-    | h::m::t -> if (fst h == 0) then canonique t else 
+    | h::t -> if (fst h == 0) then canonique t else 
         insere h (canonique t)
 ;;
 
 (** des tests pour tester la fonction canonique *)
 let listetest : polynome = [(120,3); (-2,2); (10,14); (-5,2); (0,2)];;
+let l : polynome = [];;
+let l2 : polynome = [(10,14)];;
 canonique(listetest);;
+canonique(l);;
+canonique(l2);;
 
 (** val poly_add : polynome -> polynome -> polynome *)
 let rec poly_add (l1 : polynome) (l2 : polynome) : polynome  = 
@@ -64,6 +68,6 @@ let ltest4 : polynome = [(5,0);(3,1); (-4,2)];;
 poly_prod ltest3  ltest4;;
 poly_prod [(123,0)] [(1, 1)];;
 poly_prod [] [(2, 10)];;
-poly_prod ltest1 [];;
+poly_prod ltest3 [];;
 poly_prod [(1, 13)] [];;
 poly_prod [] [];;
